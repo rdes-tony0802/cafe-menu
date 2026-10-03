@@ -3,30 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>溫暖咖啡小屋 | Warm Coffee Cottage</title>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js CDN for reactive state management -->
+
+    <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
     <style>
+        @font-face {
+            font-family: 'jf-openhuninn';
+            src: url('./jf-openhuninn-2.1.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
         body {
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            font-family: 'jf-openhuninn', sans-serif;
             background-color: #FDFBF7;
             color: #4A3E35;
         }
+
         /* Custom scrollbar for milk tea aesthetic */
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #F4EDE2;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #D4C5B9;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #8C7A6B;
         }
