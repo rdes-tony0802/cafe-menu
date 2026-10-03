@@ -246,12 +246,11 @@
 
                 <!-- Gemini Pay Section -->
                 <div x-show="selectedPayment === 'gemini'" class="bg-white/90 p-6 rounded-2xl border border-[#EBE3D5] space-y-4">
-                    <div class="flex justify-between items-center">
+                    <div>
                         <h4 class="font-bold text-[#3C2F2F] flex items-center space-x-2">
                             <span>✨</span>
                             <span>Gemini Pay 登入驗證</span>
                         </h4>
-                        <span class="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-medium">3個帳戶選擇</span>
                     </div>
 
                     <template x-if="!geminiLoggedIn">
