@@ -255,16 +255,6 @@
                         <span class="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-medium">3個帳戶選擇</span>
                     </div>
 
-                    <!-- Quick Fill helper for Gemini Pay -->
-                    <div class="bg-[#F4EDE2] p-3 rounded-xl text-xs space-y-1.5">
-                        <p class="font-semibold text-[#3C2F2F]" x-text="t('quickFill')">快速填入測試帳號：</p>
-                        <div class="flex flex-wrap gap-2">
-                            <button @click="geminiEmail='guigui10111@geminipay.com'; geminiPassword=`!_3@j^U'No`" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號1 (無限)</button>
-                            <button @click="geminiEmail='bacan0312@genimipay.com'; geminiPassword='abC€123'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號2 (1 NTD)</button>
-                            <button @click="geminiEmail='iloveandy2130@geminipay.com'; geminiPassword='aBc$213014'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號3 (無限)</button>
-                        </div>
-                    </div>
-
                     <template x-if="!geminiLoggedIn">
                         <div class="space-y-3">
                             <input type="email" x-model="geminiEmail" placeholder="請輸入帳號名稱" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
@@ -435,7 +425,6 @@
                             successTitle: '付款成功！',
                             successDesc: '感謝您的光臨，您的餐點正在用心製作中。',
                             close: '關閉',
-                            quickFill: '快速填入測試帳號：'
                         },
                         en: {
                             title: 'Warm Coffee Cottage',
@@ -450,7 +439,6 @@
                             successTitle: 'Payment Successful!',
                             successDesc: 'Thank you for your visit. Your order is being freshly prepared.',
                             close: 'Close',
-                            quickFill: 'Quick Fill Test Accounts:'
                         }
                     };
                     return dict[this.lang][key] || key;
