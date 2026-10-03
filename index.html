@@ -199,14 +199,14 @@
                             <span>🍊</span>
                             <span>Orange Pay</span>
                         </div>
-                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Orange 帳號付款 (2個帳號)' : 'Login required (2 accounts)'"></p>
+                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Orange 帳號付款' : 'Login required (2 accounts)'"></p>
                     </button>
                     <button @click="selectedPayment = 'gemini'" :class="selectedPayment === 'gemini' ? 'border-[#8C7A6B] bg-[#F4EDE2] shadow-sm' : 'border-[#E6DFD5] hover:bg-white'" class="p-4 rounded-2xl border-2 text-left transition-all">
                         <div class="font-bold text-[#3C2F2F] text-base flex items-center space-x-2">
                             <span>✨</span>
                             <span>Gemini Pay</span>
                         </div>
-                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Gemini 帳號付款 (3個帳號)' : 'Login required (3 accounts)'"></p>
+                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Gemini 帳號付款' : 'Login required (3 accounts)'"></p>
                     </button>
                 </div>
 
@@ -218,15 +218,6 @@
                             <span>Orange Pay 登入驗證</span>
                         </h4>
                         <span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-medium" x-text="lang === 'zh' ? '無限金額帳戶' : 'Infinite Balance'"></span>
-                    </div>
-
-                    <!-- Quick Fill helper for testing complex credentials -->
-                    <div class="bg-[#F4EDE2] p-3 rounded-xl text-xs space-y-1.5">
-                        <p class="font-semibold text-[#3C2F2F]" x-text="t('quickFill')">快速填入測試帳號：</p>
-                        <div class="flex flex-wrap gap-2">
-                            <button @click="orangeEmail='toast0731@orangepay.com'; orangePassword='tAt73@rngC.'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號 1 (無限)</button>
-                            <button @click="orangeEmail='fujianan2080@orangepay.com'; orangePassword='fI?vKMni19'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號 2 (無限)</button>
-                        </div>
                     </div>
 
                     <template x-if="!orangeLoggedIn">
