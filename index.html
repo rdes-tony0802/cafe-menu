@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>溫暖咖啡小屋 | Warm Coffee Cottage</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN for reactive state management -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF7;
+            color: #4A3E35;
+        }
+        /* Custom scrollbar for milk tea aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4EDE2;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4C5B9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8C7A6B;
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF7] text-[#4A3E35] min-h-screen flex flex-col selection:bg-[#D4C5B9] selection:text-[#3C2F2F]" x-data="coffeeApp()">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-[#F4EDE2]/90 backdrop-blur-md border-b border-[#E6DFD5] transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-[#8C7A6B] flex items-center justify-center text-[#FDFBF7] font-bold text-xl shadow-sm">
+                    ☕
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide text-[#3C2F2F]" x-text="lang === 'zh' ? '溫暖咖啡小屋' : 'Warm Coffee Cottage'">溫暖咖啡小屋</h1>
+                    <p class="text-xs text-[#8C7A6B]" x-text="lang === 'zh' ? '溫暖米白風格質感咖啡館' : 'Warm Beige Aesthetic Café'">溫暖米白風格質感咖啡館</p>
+                </div>
+            </div>
+
+            <!-- Controls: Language Toggle & Cart Button -->
+            <div class="flex items-center space-x-4">
+                <!-- Language Switcher -->
+                <button @click="lang = lang === 'zh' ? 'en' : 'zh'" class="px-3 py-1.5 rounded-full bg-[#E6DFD5] hover:bg-[#D4C5B9] text-[#3C2F2F] text-sm font-medium transition-colors shadow-sm flex items-center space-x-1.5">
+                    <span>🌐</span>
+                    <span x-text="lang === 'zh' ? 'English' : '中文'">English</span>
+                </button>
+
+                <!-- Cart Button -->
+                <button @click="isCartOpen = true" class="relative px-4 py-2 rounded-xl bg-[#8C7A6B] hover:bg-[#726254] text-[#FDFBF7] font-medium transition-all shadow-md flex items-center space-x-2">
+                    <span class="text-lg">🛒</span>
+                    <span class="hidden sm:inline" x-text="t('cart')">購物車</span>
+                    <span x-show="cartCount() > 0" class="absolute -top-2 -right-2 bg-[#D4C5B9] text-[#3C2F2F] font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#FDFBF7]" x-text="cartCount()">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="bg-gradient-to-b from-[#F4EDE2] to-[#FDFBF7] py-12 px-4 border-b border-[#E6DFD5]">
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+            <span class="inline-block px-4 py-1 rounded-full bg-[#E6DFD5] text-[#5C4E43] text-sm font-medium tracking-wide">
+                ✨ <span x-text="lang === 'zh' ? '嚴選在地與頂級進口原料' : 'Carefully Selected Local & Imported Ingredients'">嚴選在地與頂級進口原料</span> ✨
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-[#3C2F2F]" x-text="t('title')">溫暖咖啡小屋</h2>
+            <p class="text-[#726254] max-w-xl mx-auto text-sm sm:text-base" x-text="t('subtitle')">溫暖米白風格質感咖啡館 · 享受慢活時光</p>
+        </div>
+    </section>
+
+    <!-- Category Tabs -->
+    <nav class="sticky top-20 z-30 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#E6DFD5] py-4 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 overflow-x-auto scrollbar-none">
+            <div class="flex space-x-2 sm:justify-center min-w-max">
+                <template x-for="(catName, catKey) in categories" :key="catKey">
+                    <button @click="activeTab = catKey"
+                            :class="activeTab === catKey ? 'bg-[#8C7A6B] text-[#FDFBF7] shadow-md' : 'bg-[#F4EDE2] hover:bg-[#E6DFD5] text-[#5C4E43]'"
+                            class="px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200"
+                            x-text="catName[lang]">
+                    </button>
+                </template>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <template x-for="item in menu[activeTab]" :key="item.id">
+                <div class="bg-white/80 backdrop-blur border border-[#EBE3D5] rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="relative overflow-hidden rounded-xl mb-4 bg-[#F4EDE2] h-48">
+                            <img :src="item.img" :alt="item.nameZh" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x300/F4EDE2/8C7A6B?text=Coffee+Item'">
+                            <div class="absolute top-3 right-3 bg-[#FDFBF7]/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-[#3C2F2F] shadow-sm">
+                                <span x-text="item.price"></span> NT$
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-lg text-[#3C2F2F]" x-text="lang === 'zh' ? item.nameZh : item.nameEn"></h3>
+                        <p class="text-xs text-[#8C7A6B] mt-0.5" x-text="lang === 'zh' ? item.nameEn : item.nameZh"></p>
+                    </div>
+                    <div class="mt-6 pt-3 border-t border-[#F4EDE2] flex items-center justify-between">
+                        <span class="text-sm font-semibold text-[#5C4E43]"><span x-text="item.price"></span> NT$</span>
+                        <button @click="addToCart(item)" class="px-4 py-2 rounded-xl bg-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-[#FDFBF7] text-[#3C2F2F] text-sm font-medium transition-colors shadow-sm flex items-center space-x-1">
+                            <span>+</span>
+                            <span x-text="t('add')">加入</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </main>
+
+    <!-- Cart Slide-over / Modal -->
+    <div x-show="isCartOpen" class="fixed inset-0 z-50 overflow-hidden" style="display: none;">
+        <div class="absolute inset-0 bg-[#3C2F2F]/40 backdrop-blur-sm transition-opacity" @click="isCartOpen = false"></div>
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-[#FDFBF7] shadow-2xl border-l border-[#E6DFD5] flex flex-col">
+                <!-- Cart Header -->
+                <div class="p-6 bg-[#F4EDE2] border-b border-[#E6DFD5] flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">🛒</span>
+                        <h2 class="text-lg font-bold text-[#3C2F2F]" x-text="t('cart')">購物車</h2>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-[#8C7A6B] text-[#FDFBF7]" x-text="cartCount()">0</span>
+                    </div>
+                    <button @click="isCartOpen = false" class="w-8 h-8 rounded-full bg-[#E6DFD5] hover:bg-[#D4C5B9] flex items-center justify-center text-[#3C2F2F] font-bold">✕</button>
+                </div>
+
+                <!-- Cart Items List -->
+                <div class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <template x-if="cart.length === 0">
+                        <div class="text-center py-20 text-[#8C7A6B] space-y-3">
+                            <span class="text-4xl">☕</span>
+                            <p class="text-sm" x-text="t('emptyCart')">購物車目前是空的，快去挑選喜歡的飲品與甜點吧！</p>
+                        </div>
+                    </template>
+                    <template x-for="(item, index) in cart" :key="index">
+                        <div class="bg-white border border-[#EBE3D5] rounded-xl p-4 flex items-center justify-between shadow-sm">
+                            <div class="flex-1 pr-3">
+                                <h4 class="font-bold text-sm text-[#3C2F2F]" x-text="lang === 'zh' ? item.nameZh : item.nameEn"></h4>
+                                <p class="text-xs text-[#8C7A6B] mt-0.5" x-text="item.price + ' NT$ × ' + item.quantity"></p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="font-bold text-sm text-[#5C4E43]" x-text="(item.price * item.quantity) + ' NT$'"></span>
+                                <!-- Delete button if clicked mistakenly -->
+                                <button @click="removeFromCart(index)" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors" title="刪除此餐點">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Cart Footer & Checkout -->
+                <div class="p-6 bg-[#F4EDE2] border-t border-[#E6DFD5] space-y-4">
+                    <div class="flex justify-between items-center text-lg font-bold text-[#3C2F2F]">
+                        <span x-text="t('total')">總計</span>
+                        <span class="text-xl" x-text="cartTotal() + ' NT$'">0 NT$</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button @click="clearCart()" x-show="cart.length > 0" class="py-3 rounded-xl bg-[#E6DFD5] hover:bg-[#D4C5B9] text-[#3C2F2F] text-sm font-medium transition-colors">
+                            <span x-text="t('clearCart')">清空購物車</span>
+                        </button>
+                        <button @click="isCheckoutOpen = true; isCartOpen = false;" :disabled="cart.length === 0" :class="cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#726254] shadow-md'" class="col-span-2 py-3.5 rounded-xl bg-[#8C7A6B] text-[#FDFBF7] font-bold text-sm transition-all flex items-center justify-center space-x-2">
+                            <span>💳</span>
+                            <span x-text="t('checkout')">前往結帳</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout & Payment Modal -->
+    <div x-show="isCheckoutOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3C2F2F]/50 backdrop-blur-sm" style="display: none;">
+        <div class="bg-[#FDFBF7] rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-[#E6DFD5] max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 mb-6 border-b border-[#E6DFD5]">
+                <h3 class="text-xl font-bold text-[#3C2F2F]" x-text="t('paymentTitle')">選擇付款方式</h3>
+                <button @click="isCheckoutOpen = false" class="w-8 h-8 rounded-full bg-[#E6DFD5] hover:bg-[#D4C5B9] flex items-center justify-center text-[#3C2F2F] font-bold">✕</button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Payment Method Selection Tabs -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button @click="selectedPayment = 'orange'" :class="selectedPayment === 'orange' ? 'border-[#8C7A6B] bg-[#F4EDE2] shadow-sm' : 'border-[#E6DFD5] hover:bg-white'" class="p-4 rounded-2xl border-2 text-left transition-all">
+                        <div class="font-bold text-[#3C2F2F] text-base flex items-center space-x-2">
+                            <span>🍊</span>
+                            <span>Orange Pay</span>
+                        </div>
+                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Orange 帳號付款 (2個帳號)' : 'Login required (2 accounts)'"></p>
+                    </button>
+                    <button @click="selectedPayment = 'gemini'" :class="selectedPayment === 'gemini' ? 'border-[#8C7A6B] bg-[#F4EDE2] shadow-sm' : 'border-[#E6DFD5] hover:bg-white'" class="p-4 rounded-2xl border-2 text-left transition-all">
+                        <div class="font-bold text-[#3C2F2F] text-base flex items-center space-x-2">
+                            <span>✨</span>
+                            <span>Gemini Pay</span>
+                        </div>
+                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Gemini 帳號付款 (3個帳號)' : 'Login required (3 accounts)'"></p>
+                    </button>
+                </div>
+
+                <!-- Orange Pay Section -->
+                <div x-show="selectedPayment === 'orange'" class="bg-white/90 p-6 rounded-2xl border border-[#EBE3D5] space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-[#3C2F2F] flex items-center space-x-2">
+                            <span>🍊</span>
+                            <span>Orange Pay 登入驗證</span>
+                        </h4>
+                        <span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-medium" x-text="lang === 'zh' ? '無限金額帳戶' : 'Infinite Balance'"></span>
+                    </div>
+
+                    <!-- Quick Fill helper for testing complex credentials -->
+                    <div class="bg-[#F4EDE2] p-3 rounded-xl text-xs space-y-1.5">
+                        <p class="font-semibold text-[#3C2F2F]" x-text="t('quickFill')">快速填入測試帳號：</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button @click="orangeEmail='toast0731@orangepay.com'; orangePassword='tAt73@rngC.'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號 1 (無限)</button>
+                            <button @click="orangeEmail='fujianan2080@orangepay.com'; orangePassword='fI?vKMni19'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號 2 (無限)</button>
+                        </div>
+                    </div>
+
+                    <template x-if="!orangeLoggedIn">
+                        <div class="space-y-3">
+                            <input type="email" x-model="orangeEmail" placeholder="toast0731@orangepay.com" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <input type="password" x-model="orangePassword" placeholder="請輸入密碼 (例如 tAt73@rngC.)" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <p x-show="orangeError" class="text-xs text-red-600 font-medium" x-text="orangeError"></p>
+                            <button @click="loginOrange(orangeEmail, orangePassword)" class="w-full py-2.5 rounded-xl bg-[#8C7A6B] text-white font-medium text-sm hover:bg-[#726254] transition-colors">登入 Orange Pay</button>
+                        </div>
+                    </template>
+
+                    <template x-if="orangeLoggedIn">
+                        <div class="bg-green-50 border border-green-200 p-4 rounded-xl space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-medium text-green-800">✅ 已登入: <span x-text="orangeUser.email"></span></span>
+                                <button @click="logoutOrange()" class="text-xs text-red-600 underline">登出</button>
+                            </div>
+                            <div class="text-xs text-green-700 font-medium">
+                                帳戶餘額: <span class="font-bold text-base">∞ NTD (無限金額)</span>
+                            </div>
+                            <button @click="payWithOrange()" class="w-full py-3 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors shadow-sm">
+                                確認使用 Orange Pay 付款 (<span x-text="cartTotal()"></span> NT$)
+                            </button>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Gemini Pay Section -->
+                <div x-show="selectedPayment === 'gemini'" class="bg-white/90 p-6 rounded-2xl border border-[#EBE3D5] space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-[#3C2F2F] flex items-center space-x-2">
+                            <span>✨</span>
+                            <span>Gemini Pay 登入驗證</span>
+                        </h4>
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-medium">3個帳戶選擇</span>
+                    </div>
+
+                    <!-- Quick Fill helper for Gemini Pay -->
+                    <div class="bg-[#F4EDE2] p-3 rounded-xl text-xs space-y-1.5">
+                        <p class="font-semibold text-[#3C2F2F]" x-text="t('quickFill')">快速填入測試帳號：</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button @click="geminiEmail='guigui10111@geminipay.com'; geminiPassword=`!_3@j^U'No`" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號1 (無限)</button>
+                            <button @click="geminiEmail='bacan0312@genimipay.com'; geminiPassword='abC€123'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號2 (1 NTD)</button>
+                            <button @click="geminiEmail='iloveandy2130@geminipay.com'; geminiPassword='aBc$213014'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號3 (無限)</button>
+                        </div>
+                    </div>
+
+                    <template x-if="!geminiLoggedIn">
+                        <div class="space-y-3">
+                            <input type="email" x-model="geminiEmail" placeholder="guigui10111@geminipay.com" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <input type="password" x-model="geminiPassword" placeholder="請輸入密碼 (例如 !_3@j^U'No 或 abC€123)" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <p x-show="geminiError" class="text-xs text-red-600 font-medium" x-text="geminiError"></p>
+                            <button @click="loginGemini(geminiEmail, geminiPassword)" class="w-full py-2.5 rounded-xl bg-[#8C7A6B] text-white font-medium text-sm hover:bg-[#726254] transition-colors">登入 Gemini Pay</button>
+                        </div>
+                    </template>
+
+                    <template x-if="geminiLoggedIn">
+                        <div :class="geminiUser.balance === 1 ? 'bg-amber-50 border-amber-200' : 'bg-green-50 border-green-200'" class="border p-4 rounded-xl space-y-3">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-medium text-gray-800">✅ 已登入: <span x-text="geminiUser.email"></span></span>
+                                <button @click="logoutGemini()" class="text-xs text-red-600 underline">登出</button>
+                            </div>
+                            <div class="text-xs font-medium">
+                                帳戶餘額: 
+                                <span class="font-bold text-base" :class="geminiUser.balance === 1 ? 'text-amber-700' : 'text-green-700'" x-text="geminiUser.balance === 1 ? '1 NTD (只有 1 元)' : '∞ NTD (無限金額)'"></span>
+                            </div>
+                            <button @click="payWithGemini()" class="w-full py-3 rounded-xl bg-purple-600 text-white font-bold text-sm hover:bg-purple-700 transition-colors shadow-sm">
+                                確認使用 Gemini Pay 付款 (<span x-text="cartTotal()"></span> NT$)
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div x-show="orderSuccessModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3C2F2F]/50 backdrop-blur-sm" style="display: none;">
+        <div class="bg-[#FDFBF7] rounded-3xl max-w-md w-full p-8 text-center space-y-6 shadow-2xl border border-[#E6DFD5]">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-4xl shadow-inner">
+                🎉
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-bold text-[#3C2F2F]" x-text="t('successTitle')">付款成功！</h3>
+                <p class="text-sm text-[#726254]" x-text="t('successDesc')">感謝您的光臨，您的餐點正在用心製作中。</p>
+            </div>
+            <button @click="orderSuccessModal = false" class="w-full py-3.5 rounded-xl bg-[#8C7A6B] hover:bg-[#726254] text-[#FDFBF7] font-bold text-sm transition-colors shadow-md">
+                <span x-text="t('close')">關閉</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Popup -->
+    <div x-show="toast.show" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-4"
+         class="fixed bottom-6 right-6 z-50 bg-[#3C2F2F] text-[#FDFBF7] px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-3 text-sm font-medium"
+         style="display: none;">
+        <span>✨</span>
+        <span x-text="toast.message"></span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#F4EDE2] border-t border-[#E6DFD5] py-8 text-center text-xs text-[#8C7A6B] space-y-2 mt-auto">
+        <p>© 2026 溫暖咖啡小屋 Warm Coffee Cottage. All rights reserved.</p>
+        <p x-text="lang === 'zh' ? '溫暖米白風格 · 提供精緻咖啡、甜點與特調飲品' : 'Warm Beige Aesthetic · Offering Exquisite Coffee, Desserts & Beverages'"></p>
+    </footer>
+
+    <script>
+        function coffeeApp() {
+            return {
+                lang: 'zh',
+                activeTab: 'coffee',
+                cart: [],
+                isCartOpen: false,
+                isCheckoutOpen: false,
+                selectedPayment: 'orange',
+                
+                orangeEmail: '',
+                orangePassword: '',
+                orangeLoggedIn: false,
+                orangeUser: null,
+                orangeError: '',
+
+                geminiEmail: '',
+                geminiPassword: '',
+                geminiLoggedIn: false,
+                geminiUser: null,
+                geminiError: '',
+
+                orderSuccessModal: false,
+                toast: { show: false, message: '' },
+
+                categories: {
+                    coffee: { zh: '咖啡', en: 'Coffee' },
+                    desserts: { zh: '甜點', en: 'Desserts' },
+                    smoothies: { zh: '冰沙', en: 'Smoothies' },
+                    sparkling: { zh: '氣泡飲', en: 'Sparkling Drinks' },
+                    tea: { zh: '手搖飲 / 茶飲', en: 'Hand-shaken & Teas' }
+                },
+
+                menu: {
+                    coffee: [
+                        { id: 'c1', nameZh: '經典義式濃縮', nameEn: 'Espresso', price: 90, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Espresso' },
+                        { id: 'c2', nameZh: '美式咖啡', nameEn: 'Americano', price: 100, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Americano' },
+                        { id: 'c3', nameZh: '拿鐵', nameEn: 'Caffè Latte', price: 130, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Latte' },
+                        { id: 'c4', nameZh: '卡布奇諾', nameEn: 'Cappuccino', price: 130, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Cappuccino' },
+                        { id: 'c5', nameZh: '焦糖瑪奇朵', nameEn: 'Caramel Macchiato', price: 150, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Caramel+Macchiato' },
+                        { id: 'c6', nameZh: '香草風味拿鐵', nameEn: 'Vanilla Latte', price: 145, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Vanilla+Latte' },
+                        { id: 'c7', nameZh: '摩卡奇諾', nameEn: 'Caffè Mocha', price: 150, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Caffe+Mocha' },
+                        { id: 'c8', nameZh: '西西里檸檬咖啡', nameEn: 'Sicilian Lemon Coffee', price: 140, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Lemon+Coffee' },
+                        { id: 'c9', nameZh: '手沖單品咖啡', nameEn: 'Pour-Over Single Origin', price: 180, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Pour-Over' },
+                        { id: 'c10', nameZh: '燕麥奶拿鐵', nameEn: 'Oat Milk Latte', price: 160, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Oat+Milk+Latte' }
+                    ],
+                    desserts: [
+                        { id: 'd1', nameZh: '經典巴斯克乳酪蛋糕', nameEn: 'Basque Cheesecake', price: 150, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Basque+Cheesecake' },
+                        { id: 'd2', nameZh: '小山園抹茶千層蛋糕', nameEn: 'Matcha Mille Crepe', price: 180, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Matcha+Mille+Crepe' },
+                        { id: 'd3', nameZh: '法式經典檸檬塔', nameEn: 'Lemon Tart', price: 130, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Lemon+Tart' },
+                        { id: 'd4', nameZh: '提拉米蘇', nameEn: 'Tiramisu', price: 160, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Tiramisu' },
+                        { id: 'd5', nameZh: '生巧克力塔', nameEn: 'Raw Chocolate Tart', price: 150, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Chocolate+Tart' },
+                        { id: 'd6', nameZh: '伯爵茶戚風蛋糕', nameEn: 'Earl Grey Chiffon Cake', price: 130, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Earl+Grey+Cake' },
+                        { id: 'd7', nameZh: '草莓鮮奶油蛋糕', nameEn: 'Strawberry Shortcake', price: 170, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Strawberry+Shortcake' },
+                        { id: 'd8', nameZh: '可麗露', nameEn: 'Canelé', price: 90, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Canele' },
+                        { id: 'd9', nameZh: '肉桂捲', nameEn: 'Cinnamon Roll', price: 120, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Cinnamon+Roll' },
+                        { id: 'd10', nameZh: '比利時鬆餅', nameEn: 'Belgian Waffle', price: 140, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Belgian+Waffle' }
+                    ],
+                    smoothies: [
+                        { id: 's1', nameZh: '經典香草奶昔', nameEn: 'Classic Vanilla Milkshake', price: 140, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Vanilla+Milkshake' },
+                        { id: 's2', nameZh: '濃郁巧克力冰沙', nameEn: 'Rich Chocolate Smoothie', price: 150, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Chocolate+Smoothie' },
+                        { id: 's3', nameZh: '宇治抹茶紅豆冰沙', nameEn: 'Matcha Red Bean Smoothie', price: 160, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Matcha+Smoothie' },
+                        { id: 's4', nameZh: '芒果優格冰沙', nameEn: 'Mango Yogurt Smoothie', price: 160, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Mango+Smoothie' },
+                        { id: 's5', nameZh: '野莓森林冰沙', nameEn: 'Wild Berry Smoothie', price: 155, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Wild+Berry+Smoothie' },
+                        { id: 's6', nameZh: '焦糖脆片咖啡冰沙', nameEn: 'Caramel Chip Coffee Frappe', price: 165, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Coffee+Frappe' },
+                        { id: 's7', nameZh: '酪梨香蕉牛奶冰沙', nameEn: 'Avocado Banana Smoothie', price: 170, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Avocado+Smoothie' },
+                        { id: 's8', nameZh: '水蜜桃泡泡冰沙', nameEn: 'Peach Bubble Smoothie', price: 150, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Peach+Smoothie' }
+                    ],
+                    sparkling: [
+                        { id: 'sp1', nameZh: '法式藍莓氣泡飲', nameEn: 'French Blueberry Soda', price: 130, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Blueberry+Soda' },
+                        { id: 'sp2', nameZh: '柚香蜂蜜氣泡飲', nameEn: 'Yuzu Honey Sparkling', price: 130, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Yuzu+Sparkling' },
+                        { id: 'sp3', nameZh: '粉紅西柚氣泡飲', nameEn: 'Pink Grapefruit Soda', price: 135, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Grapefruit+Soda' },
+                        { id: 'sp4', nameZh: '青蘋果樂園氣泡飲', nameEn: 'Green Apple Soda', price: 125, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Green+Apple+Soda' },
+                        { id: 'sp5', nameZh: '熱帶百香鳳梨氣泡', nameEn: 'Tropical Passion Pineapple Soda', price: 140, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Pineapple+Soda' },
+                        { id: 'sp6', nameZh: '櫻花荔枝氣泡飲', nameEn: 'Sakura Lychee Soda', price: 135, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Sakura+Soda' },
+                        { id: 'sp7', nameZh: '黑醋栗黑加侖氣泡', nameEn: 'Blackcurrant Soda', price: 130, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Blackcurrant+Soda' },
+                        { id: 'sp8', nameZh: '莫希托風味氣泡飲', nameEn: 'Virgin Mojito Soda', price: 140, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Mojito+Soda' }
+                    ],
+                    tea: [
+                        { id: 't1', nameZh: '阿里山金萱茶', nameEn: 'Alishan Jinxuan Tea', price: 110, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Jinxuan+Tea' },
+                        { id: 't2', nameZh: '紅玉紅茶', nameEn: 'Sun Moon Lake Black Tea', price: 110, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Black+Tea' },
+                        { id: 't3', nameZh: '白桃烏龍茶', nameEn: 'White Peach Oolong', price: 120, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Peach+Oolong' },
+                        { id: 't4', nameZh: '玫瑰伯爵鮮奶茶', nameEn: 'Rose Earl Grey Milk Tea', price: 140, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Rose+Milk+Tea' },
+                        { id: 't5', nameZh: '黑糖珍珠鮮奶', nameEn: 'Brown Sugar Pearl Fresh Milk', price: 145, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Brown+Sugar+Pearl' },
+                        { id: 't6', nameZh: '冬瓜檸檬愛玉', nameEn: 'Winter Melon Lemon Aiyu', price: 125, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Winter+Melon+Lemon' },
+                        { id: 't7', nameZh: '四季春青茶', nameEn: 'Four Seasons Spring Green Tea', price: 100, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Green+Tea' },
+                        { id: 't8', nameZh: '蜂蜜菊花普洱茶', nameEn: 'Honey Chrysanthemum Puerh', price: 120, img: 'https://placehold.co/400x300/F4EDE2/8C7A6B?text=Puerh+Tea' }
+                    ]
+                },
+
+                t(key) {
+                    const dict = {
+                        zh: {
+                            title: '溫暖咖啡小屋',
+                            subtitle: '溫暖米白風格質感咖啡館 · 享受慢活時光',
+                            cart: '購物車',
+                            checkout: '前往結帳',
+                            emptyCart: '購物車目前是空的，快去挑選喜歡的飲品與甜點吧！',
+                            add: '加入',
+                            total: '總計',
+                            clearCart: '清空購物車',
+                            paymentTitle: '選擇付款方式與登入',
+                            successTitle: '付款成功！',
+                            successDesc: '感謝您的光臨，您的餐點正在用心製作中。',
+                            close: '關閉',
+                            quickFill: '快速填入測試帳號：'
+                        },
+                        en: {
+                            title: 'Warm Coffee Cottage',
+                            subtitle: 'Warm Beige Aesthetic Café · Enjoy Slow Living',
+                            cart: 'Cart',
+                            checkout: 'Proceed to Checkout',
+                            emptyCart: 'Your cart is empty. Pick your favorite drinks and desserts!',
+                            add: 'Add',
+                            total: 'Total',
+                            clearCart: 'Clear Cart',
+                            paymentTitle: 'Select Payment & Login',
+                            successTitle: 'Payment Successful!',
+                            successDesc: 'Thank you for your visit. Your order is being freshly prepared.',
+                            close: 'Close',
+                            quickFill: 'Quick Fill Test Accounts:'
+                        }
+                    };
+                    return dict[this.lang][key] || key;
+                },
+
+                addToCart(item) {
+                    const existing = this.cart.find(i => i.id === item.id);
+                    if (existing) {
+                        existing.quantity++;
+                    } else {
+                        this.cart.push({ ...item, quantity: 1 });
+                    }
+                    this.showToast(this.lang === 'zh' ? `已加入: ${item.nameZh}` : `Added: ${item.nameEn}`);
+                },
+
+                removeFromCart(index) {
+                    this.cart.splice(index, 1);
+                },
+
+                clearCart() {
+                    this.cart = [];
+                },
+
+                cartTotal() {
+                    return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                },
+
+                cartCount() {
+                    return this.cart.reduce((sum, item) => sum + item.quantity, 0);
+                },
+
+                showToast(msg) {
+                    this.toast.message = msg;
+                    this.toast.show = true;
+                    setTimeout(() => { this.toast.show = false; }, 2500);
+                },
+
+                loginOrange(email, pass) {
+                    const accounts = {
+                        'toast0731@orangepay.com': { pass: 'tAt73@rngC.', balance: Infinity },
+                        'fujianan2080@orangepay.com': { pass: 'fI?vKMni19', balance: Infinity }
+                    };
+                    if (accounts[email] && accounts[email].pass === pass) {
+                        this.orangeLoggedIn = true;
+                        this.orangeUser = { email, balance: accounts[email].balance };
+                        this.orangeError = '';
+                        this.showToast(this.lang === 'zh' ? 'Orange Pay 登入成功！' : 'Orange Pay Login Successful!');
+                    } else {
+                        this.orangeError = this.lang === 'zh' ? '帳號或密碼錯誤 (請檢查大小寫與符號)' : 'Invalid email or password';
+                    }
+                },
+
+                logoutOrange() {
+                    this.orangeLoggedIn = false;
+                    this.orangeUser = null;
+                    this.orangeEmail = '';
+                    this.orangePassword = '';
+                },
+
+                loginGemini(email, pass) {
+                    const accounts = {
+                        'guigui10111@geminipay.com': { pass: "!_3@j^U'No", balance: Infinity },
+                        'bacan0312@genimipay.com': { pass: 'abC€123', balance: 1 },
+                        'iloveandy2130@geminipay.com': { pass: 'aBc$213014', balance: Infinity }
+                    };
+                    if (accounts[email] && accounts[email].pass === pass) {
+                        this.geminiLoggedIn = true;
+                        this.geminiUser = { email, balance: accounts[email].balance };
+                        this.geminiError = '';
+                        this.showToast(this.lang === 'zh' ? 'Gemini Pay 登入成功！' : 'Gemini Pay Login Successful!');
+                    } else {
+                        this.geminiError = this.lang === 'zh' ? '帳號或密碼錯誤 (請檢查大小寫與符號)' : 'Invalid email or password';
+                    }
+                },
+
+                logoutGemini() {
+                    this.geminiLoggedIn = false;
+                    this.geminiUser = null;
+                    this.geminiEmail = '';
+                    this.geminiPassword = '';
+                },
+
+                payWithOrange() {
+                    if (!this.orangeLoggedIn) return;
+                    const total = this.cartTotal();
+                    if (this.orangeUser.balance >= total) {
+                        this.finalizeOrder();
+                    } else {
+                        this.showToast(this.lang === 'zh' ? '餘額不足' : 'Insufficient funds');
+                    }
+                },
+
+                payWithGemini() {
+                    if (!this.geminiLoggedIn) return;
+                    const total = this.cartTotal();
+                    if (this.geminiUser.balance >= total) {
+                        this.finalizeOrder();
+                    } else {
+                        this.showToast(this.lang === 'zh' ? '餘額不足 (此帳戶只有 1 NTD)' : 'Insufficient funds (Account only has 1 NTD)');
+                    }
+                },
+
+                finalizeOrder() {
+                    this.isCheckoutOpen = false;
+                    this.isCartOpen = false;
+                    this.cart = [];
+                    this.orderSuccessModal = true;
+                }
+            };
+        }
+    </script>
+</body>
+</html>
