@@ -170,10 +170,20 @@
                         <span class="text-xl" x-text="cartTotal() + ' NT$'">0 NT$</span>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <button @click="clearCart()" x-show="cart.length > 0" class="py-3 rounded-xl bg-[#E6DFD5] hover:bg-[#D4C5B9] text-[#3C2F2F] text-sm font-medium transition-colors">
+                        <button
+                            @click="clearCart()"
+                            x-show="cart.length > 0"
+                            class="col-span-1 py-3 rounded-xl bg-[#E6DFD5] hover:bg-[#D4C5B9] text-[#3C2F2F] text-sm font-medium transition-colors">
                             <span x-text="t('clearCart')">清空購物車</span>
                         </button>
-                        <button @click="isCheckoutOpen = true; isCartOpen = false;" :disabled="cart.length === 0" :class="cart.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#726254] shadow-md'" class="col-span-2 py-3.5 rounded-xl bg-[#8C7A6B] text-[#FDFBF7] font-bold text-sm transition-all flex items-center justify-center space-x-2">
+
+                        <button
+                            @click="isCheckoutOpen = true; isCartOpen = false"
+                            :disabled="cart.length === 0"
+                            :class="cart.length === 0
+                                ? 'col-span-2 opacity-50 cursor-not-allowed'
+                                : 'col-span-1 hover:bg-[#726254] shadow-md'"
+                            class="py-3.5 rounded-xl bg-[#8C7A6B] text-[#FDFBF7] font-bold text-sm transition-all flex items-center justify-center space-x-2">
                             <span>💳</span>
                             <span x-text="t('checkout')">前往結帳</span>
                         </button>
@@ -238,7 +248,7 @@
                                 帳戶餘額: <span class="font-bold text-base">∞ NTD (無限金額)</span>
                             </div>
                             <button @click="payWithOrange()" class="w-full py-3 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors shadow-sm">
-                                確認使用 Orange Pay 付款 (<span x-text="cartTotal()"></span> NT$)
+                                確認送出訂單 (<span x-text="cartTotal()"></span> NT$)
                             </button>
                         </div>
                     </template>
@@ -273,7 +283,7 @@
                                 <span class="font-bold text-base" :class="geminiUser.balance === 1 ? 'text-amber-700' : 'text-green-700'" x-text="geminiUser.balance === 1 ? '1 NTD (只有 1 元)' : '∞ NTD (無限金額)'"></span>
                             </div>
                             <button @click="payWithGemini()" class="w-full py-3 rounded-xl bg-purple-600 text-white font-bold text-sm hover:bg-purple-700 transition-colors shadow-sm">
-                                確認使用 Gemini Pay 付款 (<span x-text="cartTotal()"></span> NT$)
+                                確認送出訂單 (<span x-text="cartTotal()"></span> NT$)
                             </button>
                         </div>
                     </template>
