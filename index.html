@@ -199,30 +199,40 @@
                             <span>🍊</span>
                             <span>Orange Pay</span>
                         </div>
-                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Orange 帳號付款' : 'Login required (2 accounts)'"></p>
+                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Orange 帳號付款 (2個帳號)' : 'Login required (2 accounts)'"></p>
                     </button>
                     <button @click="selectedPayment = 'gemini'" :class="selectedPayment === 'gemini' ? 'border-[#8C7A6B] bg-[#F4EDE2] shadow-sm' : 'border-[#E6DFD5] hover:bg-white'" class="p-4 rounded-2xl border-2 text-left transition-all">
                         <div class="font-bold text-[#3C2F2F] text-base flex items-center space-x-2">
                             <span>✨</span>
                             <span>Gemini Pay</span>
                         </div>
-                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Gemini 帳號付款' : 'Login required (3 accounts)'"></p>
+                        <p class="text-xs text-[#8C7A6B] mt-1" x-text="lang === 'zh' ? '需登入 Gemini 帳號付款 (3個帳號)' : 'Login required (3 accounts)'"></p>
                     </button>
                 </div>
 
                 <!-- Orange Pay Section -->
                 <div x-show="selectedPayment === 'orange'" class="bg-white/90 p-6 rounded-2xl border border-[#EBE3D5] space-y-4">
-                    <div>
+                    <div class="flex justify-between items-center">
                         <h4 class="font-bold text-[#3C2F2F] flex items-center space-x-2">
                             <span>🍊</span>
                             <span>Orange Pay 登入驗證</span>
                         </h4>
+                        <span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-medium" x-text="lang === 'zh' ? '無限金額帳戶' : 'Infinite Balance'"></span>
+                    </div>
+
+                    <!-- Quick Fill helper for testing complex credentials -->
+                    <div class="bg-[#F4EDE2] p-3 rounded-xl text-xs space-y-1.5">
+                        <p class="font-semibold text-[#3C2F2F]" x-text="t('quickFill')">快速填入測試帳號：</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button @click="orangeEmail='toast0731@orangepay.com'; orangePassword='tAt73@rngC.'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號 1 (無限)</button>
+                            <button @click="orangeEmail='fujianan2080@orangepay.com'; orangePassword='fI?vKMni19'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號 2 (無限)</button>
+                        </div>
                     </div>
 
                     <template x-if="!orangeLoggedIn">
                         <div class="space-y-3">
-                            <input type="email" x-model="orangeEmail" placeholder="請輸入帳號名稱" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
-                            <input type="password" x-model="orangePassword" placeholder="請輸入密碼" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <input type="email" x-model="orangeEmail" placeholder="toast0731@orangepay.com" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <input type="password" x-model="orangePassword" placeholder="請輸入密碼 (例如 tAt73@rngC.)" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
                             <p x-show="orangeError" class="text-xs text-red-600 font-medium" x-text="orangeError"></p>
                             <button @click="loginOrange(orangeEmail, orangePassword)" class="w-full py-2.5 rounded-xl bg-[#8C7A6B] text-white font-medium text-sm hover:bg-[#726254] transition-colors">登入 Orange Pay</button>
                         </div>
@@ -246,17 +256,28 @@
 
                 <!-- Gemini Pay Section -->
                 <div x-show="selectedPayment === 'gemini'" class="bg-white/90 p-6 rounded-2xl border border-[#EBE3D5] space-y-4">
-                    <div>
+                    <div class="flex justify-between items-center">
                         <h4 class="font-bold text-[#3C2F2F] flex items-center space-x-2">
                             <span>✨</span>
                             <span>Gemini Pay 登入驗證</span>
                         </h4>
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-medium">3個帳戶選擇</span>
+                    </div>
+
+                    <!-- Quick Fill helper for Gemini Pay -->
+                    <div class="bg-[#F4EDE2] p-3 rounded-xl text-xs space-y-1.5">
+                        <p class="font-semibold text-[#3C2F2F]" x-text="t('quickFill')">快速填入測試帳號：</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button @click="geminiEmail='guigui10111@geminipay.com'; geminiPassword=`!_3@j^U'No`" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號1 (無限)</button>
+                            <button @click="geminiEmail='bacan0312@genimipay.com'; geminiPassword='abC€123'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號2 (1 NTD)</button>
+                            <button @click="geminiEmail='iloveandy2130@geminipay.com'; geminiPassword='aBc$213014'" class="px-2.5 py-1 rounded bg-white text-[#5C4E43] border border-[#D4C5B9] hover:bg-[#8C7A6B] hover:text-white transition-colors">帳號3 (無限)</button>
+                        </div>
                     </div>
 
                     <template x-if="!geminiLoggedIn">
                         <div class="space-y-3">
-                            <input type="email" x-model="geminiEmail" placeholder="請輸入帳號名稱" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
-                            <input type="password" x-model="geminiPassword" placeholder="請輸入密碼" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <input type="email" x-model="geminiEmail" placeholder="guigui10111@geminipay.com" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
+                            <input type="password" x-model="geminiPassword" placeholder="請輸入密碼 (例如 !_3@j^U'No 或 abC€123)" class="w-full px-4 py-2.5 rounded-xl border border-[#E6DFD5] bg-[#FDFBF7] text-sm focus:outline-none focus:border-[#8C7A6B]">
                             <p x-show="geminiError" class="text-xs text-red-600 font-medium" x-text="geminiError"></p>
                             <button @click="loginGemini(geminiEmail, geminiPassword)" class="w-full py-2.5 rounded-xl bg-[#8C7A6B] text-white font-medium text-sm hover:bg-[#726254] transition-colors">登入 Gemini Pay</button>
                         </div>
@@ -423,6 +444,7 @@
                             successTitle: '付款成功！',
                             successDesc: '感謝您的光臨，您的餐點正在用心製作中。',
                             close: '關閉',
+                            quickFill: '快速填入測試帳號：'
                         },
                         en: {
                             title: 'Warm Coffee Cottage',
@@ -437,6 +459,7 @@
                             successTitle: 'Payment Successful!',
                             successDesc: 'Thank you for your visit. Your order is being freshly prepared.',
                             close: 'Close',
+                            quickFill: 'Quick Fill Test Accounts:'
                         }
                     };
                     return dict[this.lang][key] || key;
